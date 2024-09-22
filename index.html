@@ -1,0 +1,362 @@
+<html><head><base href="/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía Telefónica Profesional</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+  }
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  h1 {
+    color: #2c3e50;
+    text-align: center;
+  }
+  .contact-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  .contact-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ecf0f1;
+  }
+  .contact-item:hover {
+    background-color: #f9f9f9;
+  }
+  .contact-photo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 15px;
+    object-fit: cover;
+    background-color: #bdc3c7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .contact-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .contact-photo svg {
+    width: 60%;
+    height: 60%;
+    fill: #7f8c8d;
+  }
+  .contact-info {
+    flex-grow: 1;
+  }
+  .contact-name {
+    font-weight: bold;
+    color: #34495e;
+  }
+  .contact-phone {
+    color: #7f8c8d;
+  }
+  .contact-actions {
+    display: flex;
+    gap: 10px;
+  }
+  .btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .btn-edit {
+    background-color: #3498db;
+    color: white;
+  }
+  .btn-delete {
+    background-color: #e74c3c;
+    color: white;
+  }
+  .btn-add {
+    background-color: #2ecc71;
+    color: white;
+    padding: 10px 15px;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+  }
+  .modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 5px;
+    width: 50%;
+    max-width: 500px;
+  }
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .close:hover {
+    color: black;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  input[type="text"],
+  input[type="tel"],
+  select {
+    padding: 8px;
+    border: 1px solid #bdc3c7;
+    border-radius: 3px;
+  }
+  input[type="submit"] {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .photo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  .photo-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #bdc3c7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .photo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .photo-preview svg {
+    width: 60%;
+    height: 60%;
+    fill: #7f8c8d;
+  }
+  #photoInput {
+    display: none;
+  }
+  .photo-label {
+    background-color: #3498db;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .phone-input {
+    display: flex;
+    gap: 10px;
+  }
+  #countryCode {
+    width: 30%;
+  }
+  #phoneNumber {
+    width: 70%;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Guía Telefónica</h1>
+    <ul id="contactList" class="contact-list"></ul>
+    <button id="addContactBtn" class="btn btn-add">Agregar Contacto</button>
+  </div>
+
+  <div id="contactModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2 id="modalTitle">Agregar Contacto</h2>
+      <form id="contactForm">
+        <div class="photo-container">
+          <div class="photo-preview" id="photoPreview">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+            </svg>
+          </div>
+          <input type="file" id="photoInput" accept="image/*" capture="user">
+          <label for="photoInput" class="photo-label">Tomar Foto</label>
+        </div>
+        <input type="text" id="contactName" placeholder="Nombre" required>
+        <div class="phone-input">
+          <select id="countryCode" required>
+            <option value="+34">España (+34)</option>
+            <option value="+591">Bolivia (+591)</option>
+            <option value="+57">Colombia (+57)</option>
+            <option value="+54">Argentina (+54)</option>
+          </select>
+          <input type="tel" id="phoneNumber" placeholder="Número de teléfono" required>
+        </div>
+        <input type="submit" value="Guardar">
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"></script>
+  <script>
+    let contacts = JSON.parse(localStorage.getItem('contacts')) || [];
+    const contactList = document.getElementById('contactList');
+    const addContactBtn = document.getElementById('addContactBtn');
+    const contactModal = document.getElementById('contactModal');
+    const closeBtn = document.getElementsByClassName('close')[0];
+    const contactForm = document.getElementById('contactForm');
+    const modalTitle = document.getElementById('modalTitle');
+    const photoInput = document.getElementById('photoInput');
+    const photoPreview = document.getElementById('photoPreview');
+    let editingContactId = null;
+    let selectedPhoto = null;
+
+    function renderContacts() {
+      contactList.innerHTML = '';
+      contacts.forEach(contact => {
+        const li = document.createElement('li');
+        li.className = 'contact-item';
+        li.innerHTML = `
+          <div class="contact-photo">
+            ${contact.photo ? `<img src="${contact.photo}" alt="${contact.name}">` : 
+            `<svg viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+            </svg>`}
+          </div>
+          <div class="contact-info">
+            <div class="contact-name">${contact.name}</div>
+            <div class="contact-phone">${contact.phone}</div>
+          </div>
+          <div class="contact-actions">
+            <button class="btn btn-edit" onclick="editContact('${contact.id}')">Editar</button>
+            <button class="btn btn-delete" onclick="deleteContact('${contact.id}')">Eliminar</button>
+          </div>
+        `;
+        contactList.appendChild(li);
+      });
+    }
+
+    function saveContacts() {
+      localStorage.setItem('contacts', JSON.stringify(contacts));
+      renderContacts();
+    }
+
+    function addContact(name, phone, photo) {
+      contacts.push({ id: uuid.v4(), name, phone, photo });
+      saveContacts();
+    }
+
+    function editContact(id) {
+      const contact = contacts.find(c => c.id === id);
+      if (contact) {
+        editingContactId = id;
+        document.getElementById('contactName').value = contact.name;
+        const [countryCode, phoneNumber] = contact.phone.split(' ');
+        document.getElementById('countryCode').value = countryCode;
+        document.getElementById('phoneNumber').value = phoneNumber;
+        if (contact.photo) {
+          photoPreview.innerHTML = `<img src="${contact.photo}" alt="${contact.name}">`;
+        } else {
+          photoPreview.innerHTML = `
+            <svg viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+            </svg>
+          `;
+        }
+        selectedPhoto = contact.photo;
+        modalTitle.textContent = 'Editar Contacto';
+        contactModal.style.display = 'block';
+      }
+    }
+
+    function deleteContact(id) {
+      contacts = contacts.filter(c => c.id !== id);
+      saveContacts();
+    }
+
+    addContactBtn.onclick = function() {
+      editingContactId = null;
+      contactForm.reset();
+      photoPreview.innerHTML = `
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+        </svg>
+      `;
+      selectedPhoto = null;
+      modalTitle.textContent = 'Agregar Contacto';
+      contactModal.style.display = 'block';
+    }
+
+    closeBtn.onclick = function() {
+      contactModal.style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+      if (event.target == contactModal) {
+        contactModal.style.display = 'none';
+      }
+    }
+
+    photoInput.onchange = function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          selectedPhoto = e.target.result;
+          photoPreview.innerHTML = `<img src="${selectedPhoto}" alt="Preview">`;
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+
+    contactForm.onsubmit = function(e) {
+      e.preventDefault();
+      const name = document.getElementById('contactName').value;
+      const countryCode = document.getElementById('countryCode').value;
+      const phoneNumber = document.getElementById('phoneNumber').value;
+      const phone = `${countryCode} ${phoneNumber}`;
+
+      if (editingContactId) {
+        const index = contacts.findIndex(c => c.id === editingContactId);
+        if (index !== -1) {
+          contacts[index] = { ...contacts[index], name, phone, photo: selectedPhoto };
+        }
+      } else {
+        addContact(name, phone, selectedPhoto);
+      }
+
+      saveContacts();
+      contactModal.style.display = 'none';
+    }
+
+    renderContacts();
+  </script>
+</body>
+</html>
